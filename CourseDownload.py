@@ -255,7 +255,7 @@ def main():
         print(videoc)
         for index in videoc:
             dllist.append(allvideos[j][index - 1])
-    print("Total %d videos" % len(dllist))
+    print("Total %d × 2 = %d videos" % (len(dllist),len(dllist)*2))
     tmp = input("Are you sure[Y/N]:")
     while True:
         if tmp == "Y" or tmp == "y":
@@ -270,10 +270,14 @@ def main():
     print("Please Wait while we get the links...")
     getUrlsInList(dllist, sess)
     if int(menuc) == 1:
+        global _pattern
         if os.name == 'nt':
             localpath = "D:\\downloads\\"
+            _pattern = _pattern.replace("/","\\")
         else:
             localpath = "~/downloads/"
+            _pattern = _pattern.replace("\\","/")
+
         print("Save to %s ?" % localpath)
         tmp = input("Enter yes or another path(absloute):")
         if tmp.lower() != "yes" and tmp.lower() != "y":
@@ -295,6 +299,8 @@ def main():
         if os.name != 'nt':
             print("Sorry, only Windows is supported:(")
         else:
+            localpath = "D:\\downloads\\"
+            _pattern = _pattern.replace("/","\\")
             idmpath = "C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe"
             while not os.path.exists(idmpath) or not idmpath.lower().endswith("idman.exe"):
                 print("IDM Not Found or invalid in %s" % idmpath)
@@ -311,10 +317,11 @@ def main():
                 fp = fp.replace("$classDate", item.classDate)
                 fn1 = _fnClass
                 print("%s → %s" % (item.video1.videoName, fp + fn1))
-                subprocess.call([idmpath, '/d', item.video1.url, '/p', fp, '/f', fn1, '/a', '/s'])
+                subprocess.Popen([idmpath, '/d', item.video1.url, '/p', fp, '/f', fn1, '/a'])
                 fn2 = _fnScreen
                 print("%s → %s" % (item.video1.videoName, fp + fn2))
-                subprocess.call([idmpath, '/d', item.video2.url, '/p', fp, '/f', fn2, '/a', '/s'])
+                subprocess.Popen([idmpath, '/d', item.video2.url, '/p', fp, '/f', fn2, '/a'])
+        subprocess.Popen([idmpath, '/s'])
     if int(menuc) == 3:
         dic = {"data": []}
         for idx, item in enumerate(dllist):
